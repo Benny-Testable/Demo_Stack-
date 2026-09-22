@@ -29,6 +29,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+pythonpath = ["."]
 asyncio_mode = "auto"
 addopts = "--cov=app --cov-report=term --cov-report=xml:coverage.xml"
 

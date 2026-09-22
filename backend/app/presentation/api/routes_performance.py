@@ -1,6 +1,5 @@
 import time
 import os
-import psutil
 from fastapi import APIRouter, Query
 from app.domain.services.record_analytics_service import RecordAnalyticsDomainService
 
