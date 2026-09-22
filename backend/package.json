@@ -9,12 +9,12 @@
   },
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node --watch src/server.js",
-    "check": "node -c src/server.js",
+    "build": "tsc",
+    "start": "node dist/src/server.js",
+    "check": "tsc --noEmit",
     "lint": "eslint src/ test/",
-    "test": "cross-env NODE_ENV=test mocha \"test/**/*.test.js\"",
-    "coverage": "cross-env NODE_ENV=test nyc --reporter=cobertura --reporter=text mocha \"test/**/*.test.js\"",
+    "test": "npm run build && cross-env NODE_ENV=test mocha \"dist/test/**/*.test.js\"",
+    "coverage": "npm run build && cross-env NODE_ENV=test nyc --reporter=cobertura --reporter=text mocha \"dist/test/**/*.test.js\"",
     "mutation": "stryker run"
   },
   "dependencies": {
@@ -31,6 +31,11 @@
     "@socketsecurity/cli": "^1.1.158",
     "@stryker-mutator/core": "^8.6.0",
     "@stryker-mutator/mocha-runner": "^8.6.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.1",
+    "@types/supertest": "^6.0.2",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
     "eslint-plugin-security": "^3.0.1",
@@ -42,6 +47,9 @@
     "monocart-coverage-reports": "^2.13.0",
     "nyc": "^17.1.0",
     "oxlint": "^1.79.0",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
+    "typescript": "^5.7.2"
   }
 }

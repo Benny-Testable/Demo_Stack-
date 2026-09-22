@@ -8,8 +8,8 @@ A reference platform stack and testing benchmark architected with **Enterprise C
 
 | Layer / Service | Technology | Version | Bundler / Tooling | Role / Port |
 | :--- | :--- | :--- | :--- | :--- |
-| **Frontend** | **Angular** | `20.3.0` | **esbuild** (`@angular/build`) + npm | Angular 20 SPA with Signals, Biome 2.5.9, ESLint (`:4200`) |
-| **Unified Backend** | **Node.js / Express** | `22.0+` | Clean Architecture (DDD) + CommonJS | REST API (`:3001`), gRPC Server (`:50051`), Mongoose 8, Elasticsearch 8, AWS SDK |
+| **Frontend** | **Angular** | `20.3.0` | **esbuild** (`@angular/build`) + npm | Angular 20 TypeScript SPA with Signals, Biome 2.5.9, ESLint (`:4200`) |
+| **Unified Backend** | **TypeScript / Node.js** | `5.7+ / Node 22+` | Clean Architecture (DDD) + `tsc` | REST API (`:3001`), gRPC Server (`:50051`), Mongoose 8, Elasticsearch 8, AWS SDK |
 | **Data Layer 1** | **MongoDB** | `8.0` | `mongo:8` (Docker) | Primary persistent document store (`:27017`) |
 | **Data Layer 2** | **Elasticsearch** | `8.15.3` | Docker (`docker.elastic.co`) | Search & analytics engine (`:9200`) |
 | **Messaging / Eventing**| **gRPC** | `1.11.3` | `@grpc/grpc-js` + `@grpc/proto-loader` | Server-streaming RPC contract (`shared/proto/record.proto`) |
