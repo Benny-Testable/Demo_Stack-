@@ -1,6 +1,6 @@
-# Demo_Stack — Pure Python Reference Platform Stack & Metrics Testbed
+# Demo_Stack — Python + JavaScript Reference Platform Stack
 
-A reference platform stack and testing benchmark architected with **Python Enterprise Clean Architecture / Domain-Driven Design (DDD)** and validated against the **Testable Engineering Strategy Matrix (v0.2)**.
+A reference platform stack combining a **Python (FastAPI Clean Architecture / DDD)** backend with a **JavaScript Single Page Application (SPA)** frontend, validated against the **Testable Engineering Strategy Matrix (v0.2)**.
 
 ---
 
@@ -8,8 +8,8 @@ A reference platform stack and testing benchmark architected with **Python Enter
 
 | Layer / Service | Technology | Version | Tooling | Role / Port |
 | :--- | :--- | :--- | :--- | :--- |
-| **Unified Backend** | **Python (FastAPI / Uvicorn)** | `3.12+ / 3.13+` | Clean Architecture (DDD) + Pydantic v2 | REST API (`:8000`), gRPC Server (`:50051`), PyMongo 4, Elasticsearch, AWS Boto3 |
-| **Client / CLI** | **Python CLI** | `3.12+` | `httpx` + `argparse` | CLI administration client (`client/cli.py`) |
+| **Frontend** | **JavaScript SPA** | `ES2022+` | HTML5 + Modern JavaScript + Express | Client application UI (`:4200`) |
+| **Unified Backend** | **Python (FastAPI / Uvicorn)** | `3.12+` | Clean Architecture (DDD) + Pydantic v2 | REST API (`:8000`), gRPC Server (`:50051`), PyMongo 4, Elasticsearch, AWS Boto3 |
 | **Data Layer 1** | **MongoDB** | `8.0` | `mongo:8` (Docker) | Primary persistent document store (`:27017`) |
 | **Data Layer 2** | **Elasticsearch** | `8.15.3` | Docker (`docker.elastic.co`) | Search & analytics engine (`:9200`) |
 | **Messaging / Eventing**| **gRPC** | `1.66+` | `grpcio` + `grpcio-tools` | Server-streaming RPC contract (`shared/proto/record.proto`) |
@@ -17,54 +17,44 @@ A reference platform stack and testing benchmark architected with **Python Enter
 
 ---
 
-## 🏛 Clean Architecture Directory Structure
+## 📐 End-to-End System Architecture
 
 ```mermaid
-flowchart TD
-    subgraph Presentation["1. Presentation Layer (FastAPI & gRPC)"]
-        Routes["Routes (routes_record, routes_compliance, routes_performance)"] --> Middlewares["SecurityHeadersMiddleware"]
+flowchart LR
+    subgraph UI["Frontend (JavaScript SPA :4200)"]
+        HTML["index.html + app.js"] --> Fetch["fetch API Client"]
     end
 
-    subgraph Application["2. Application Layer (Use Cases & DTOs)"]
-        Routes --> UseCases["Use Cases (CreateRecord, GetRecordById, ListRecords, SearchRecords, ExportFormat)"]
+    subgraph Backend["Python FastAPI Backend (Port 8000 / gRPC 50051)"]
+        FastAPI["FastAPI App / Routers"] --> UCase["Use Cases Layer"]
+        UCase --> MongoRepo["MongoRecordRepository"]
+        UCase --> ESAdapter["ElasticsearchAdapter"]
+        UCase --> SNSAdapter["SnsEventPublisher"]
+        UCase --> SESAdapter["SesEmailNotifier"]
+        UCase --> Evt["record_events"]
     end
 
-    subgraph Domain["3. Domain Layer (Core Business Rules)"]
-        UseCases --> Entities["Domain Entities (RecordEntity)"]
-        UseCases --> DomainServices["Domain Services (RecordAnalyticsService, ComplianceService)"]
-        UseCases --> Events["Domain Events (record_events)"]
-    end
-
-    subgraph Infrastructure["4. Infrastructure Layer (Adapters & Clients)"]
-        UseCases -.-> Repositories["MongoRecordRepository"]
-        UseCases -.-> ExternalAdapters["ElasticsearchAdapter, SnsEventPublisher, SesEmailNotifier"]
-        UseCases -.-> SecurityAdapters["SanitizationAdapter"]
-    end
-
-    Repositories --> Mongo[("MongoDB 8 (:27017)")]
-    ExternalAdapters --> ES[("Elasticsearch 8 (:9200)")]
-    ExternalAdapters --> AWS["LocalStack (:4566)"]
+    Fetch -- "HTTP REST :8000" --> FastAPI
+    MongoRepo --> MDB[("MongoDB 8 (:27017)")]
+    ESAdapter --> ES[("Elasticsearch 8 (:9200)")]
+    SNSAdapter --> AWS1["AWS SNS (LocalStack :4566)"]
+    SESAdapter --> AWS2["AWS SES (LocalStack :4566)"]
 ```
 
 ---
 
 ## 🚀 Run & Verification Commands
 
-### 1. Run Tests & Coverage
+### 1. Run Python Backend Tests & Server
 ```bash
 cd backend
 uv run pytest
-```
-
-### 2. Start Backend Server
-```bash
-cd backend
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 3. Run Python CLI
+### 2. Run JavaScript Frontend Client
 ```bash
-python client/cli.py health
-python client/cli.py list
-python client/cli.py create --title "My Record" --description "Created via CLI"
+cd frontend
+npm install
+npm start # Starts on http://localhost:4200
 ```
