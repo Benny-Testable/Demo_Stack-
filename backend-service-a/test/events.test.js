@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { recordEvents } = require('../src/events');
+const { recordEvents } = require('../src/domain/events/recordEvents');
 
 const RECORD_CREATED = 'record:created';
 

@@ -1,17 +1,18 @@
 const assert = require('assert');
 const {
-  summarizeRecordBatch,
-  detectQueryBottlenecks,
-  evaluateMemoryUsage,
-} = require('../src/utils/recordAnalytics');
+  RecordAnalyticsDomainService,
+} = require('../src/domain/services/RecordAnalyticsDomainService');
+const {
+  ExportFormatUseCase,
+} = require('../src/application/use-cases/RecordUseCases');
 
-describe('recordAnalytics utility (service-a)', () => {
+describe('RecordAnalyticsDomainService & ExportFormatUseCase (service-a)', () => {
   it('handles empty batches and invalid inputs cleanly', () => {
-    const res = summarizeRecordBatch([]);
+    const res = RecordAnalyticsDomainService.summarizeRecordBatch([]);
     assert.strictEqual(res.totalRecords, 0);
     assert.strictEqual(res.status, 'EMPTY_BATCH');
 
-    const nullRes = summarizeRecordBatch(null);
+    const nullRes = RecordAnalyticsDomainService.summarizeRecordBatch(null);
     assert.strictEqual(nullRes.totalRecords, 0);
   });
 
@@ -22,7 +23,7 @@ describe('recordAnalytics utility (service-a)', () => {
       { id: '3', title: 'Short', description: 'Generic system ping' },
     ];
 
-    const res = summarizeRecordBatch(mockRecords);
+    const res = RecordAnalyticsDomainService.summarizeRecordBatch(mockRecords);
     assert.strictEqual(res.totalRecords, 3);
     assert.strictEqual(res.validCount, 3);
     assert.strictEqual(res.categories.edtech, 1);
@@ -37,7 +38,7 @@ describe('recordAnalytics utility (service-a)', () => {
       { id: '1', title: 'Item 1', description: 'Desc 1', tags: ['node', 'mongo', 'grpc'] },
       { id: '2', title: 'Item 2', description: 'Desc 2', tags: ['mongo', 'elastic'] },
     ];
-    const res = summarizeRecordBatch(records, { deepMatrixScan: true });
+    const res = RecordAnalyticsDomainService.summarizeRecordBatch(records, { deepMatrixScan: true });
     assert.ok(res.crossTagMatches >= 0);
   });
 
@@ -50,15 +51,25 @@ describe('recordAnalytics utility (service-a)', () => {
       },
     };
 
-    const res = await detectQueryBottlenecks(['rec-1', 'rec-2'], mockDb);
+    const res = await RecordAnalyticsDomainService.detectQueryBottlenecks(['rec-1', 'rec-2'], mockDb);
     assert.strictEqual(res.queriedCount, 2);
     assert.strictEqual(res.singleQueryCount, 2);
     assert.deepStrictEqual(res.recommendedBatchQuery, { _id: { $in: ['rec-1', 'rec-2'] } });
   });
 
   it('evaluateMemoryUsage completes loop iterations', () => {
-    const res = evaluateMemoryUsage(20);
+    const res = RecordAnalyticsDomainService.evaluateMemoryUsage(20);
     assert.strictEqual(res.iterations, 20);
     assert.strictEqual(res.totalAllocatedBytes, 20 * 1024);
+  });
+
+  it('ExportFormatUseCase formats CSV and NDJSON correctly', () => {
+    const records = [{ id: '1', title: 'Test 1', description: 'Desc 1', createdAt: '2026-09-22' }];
+    const csv = ExportFormatUseCase.exportRecordsToCsv(records);
+    assert.ok(csv.startsWith('id,title,description,createdAt\n'));
+    assert.ok(csv.includes('"1","Test 1","Desc 1","2026-09-22"'));
+
+    const ndjson = ExportFormatUseCase.exportRecordsToNdjson(records);
+    assert.ok(ndjson.includes('Test 1'));
   });
 });

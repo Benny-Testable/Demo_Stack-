@@ -1,21 +1,25 @@
-const { connectDb } = require('./db');
 const { createApp } = require('./app');
-const { startGrpcServer } = require('./grpc/server');
+const { envConfig } = require('./config/env.config');
+const { MongooseConnection } = require('./infrastructure/database/mongoose/MongooseConnection');
+const { startGrpcServer } = require('./infrastructure/grpc/GrpcRecordServer');
 
-const HTTP_PORT = process.env.PORT || 3001;
+async function bootstrap() {
+  await MongooseConnection.connect(envConfig.mongoUri);
+  console.log('[service-a][db] connected to MongoDB');
 
-async function main() {
-  await connectDb();
+  await startGrpcServer(envConfig.grpcPort);
 
   const app = createApp();
-  app.listen(HTTP_PORT, () => {
-    console.log(`[service-a][rest] listening on :${HTTP_PORT}`);
+  app.listen(envConfig.port, () => {
+    console.log(`[service-a][rest] listening on :${envConfig.port}`);
   });
-
-  await startGrpcServer();
 }
 
-main().catch((err) => {
-  console.error('[service-a] fatal startup error', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  bootstrap().catch((err) => {
+    console.error('[service-a] fatal startup error', err);
+    process.exit(1);
+  });
+}
+
+module.exports = { bootstrap };

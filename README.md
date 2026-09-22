@@ -1,6 +1,6 @@
 # Demo_Stack — Reference Platform Stack & Metrics Testbed
 
-A reference microservices and frontend platform testbed configured for static analysis, security scanning, compliance verification, and performance benchmarking against the **Testable Engineering Strategy Matrix (v0.2)**.
+A reference microservices platform stack and testing benchmark architected with **Enterprise Clean Architecture / Domain-Driven Design (DDD)** and validated against the **Testable Engineering Strategy Matrix (v0.2)**.
 
 ---
 
@@ -8,9 +8,9 @@ A reference microservices and frontend platform testbed configured for static an
 
 | Layer / Service | Technology | Version | Bundler / Tooling | Role / Port |
 | :--- | :--- | :--- | :--- | :--- |
-| **Frontend** | **Angular** | `20.3.0` | **esbuild** (`@angular/build`) + npm | Angular 20 SPA with Signals, Biome, ESLint |
-| **Backend Service A** | **Node.js / Express** | `22.0+` | CommonJS + npm | REST API (`:3001`), gRPC Server (`:50051`), Mongoose 8 |
-| **Backend Service B** | **Node.js / Express** | `22.0+` | CommonJS + npm | REST (`:3002`), gRPC Client, Elasticsearch, AWS SDK |
+| **Frontend** | **Angular** | `20.3.0` | **esbuild** (`@angular/build`) + npm | Angular 20 SPA with Signals, Biome 2.5.9, ESLint |
+| **Backend Service A** | **Node.js / Express** | `22.0+` | Clean Architecture (DDD) + CommonJS | REST API (`:3001`), gRPC Server (`:50051`), Mongoose 8 |
+| **Backend Service B** | **Node.js / Express** | `22.0+` | Clean Architecture (DDD) + CommonJS | REST (`:3002`), gRPC Client, Elasticsearch, AWS SDK |
 | **Data Layer 1** | **MongoDB** | `8.0` | `mongo:8` (Docker) | Primary persistent document store (`:27017`) |
 | **Data Layer 2** | **Elasticsearch** | `8.15.3` | Docker (`docker.elastic.co`) | Search & analytics engine (`:9200`) |
 | **Messaging / Eventing**| **gRPC** | `1.11.3` | `@grpc/grpc-js` + `@grpc/proto-loader` | Server-streaming RPC contract (`shared/proto/record.proto`) |
@@ -18,52 +18,88 @@ A reference microservices and frontend platform testbed configured for static an
 
 ---
 
-## 📐 Architecture & Data Flow
+## 🏛 Backend Enterprise Architecture (Clean Architecture / DDD)
+
+Both backend services are organized into decoupled, enterprise-grade layers following Clean / Hexagonal Architecture:
 
 ```mermaid
 flowchart TD
-    subgraph Frontend["Frontend (Angular 20 / TypeScript 5.9 / esbuild)"]
-        UI["Record Form & List (Signals)"] --> HTTP["RecordService (HttpClient)"]
+    subgraph Presentation["1. Presentation Layer (HTTP & gRPC)"]
+        Routes["Routes & Middlewares"] --> Controllers["Controllers (Record, Compliance, Performance, Search)"]
     end
 
-    subgraph ServiceA["Backend Service A (Node.js 22 / Express :3001)"]
-        REST_A["REST Router (/api/records)"] --> Mongo[("MongoDB 8 :27017")]
-        REST_A --> Emitter["recordEvents (EventEmitter)"]
-        Emitter --> GrpcServer["gRPC Server :50051 (WatchRecords)"]
-        ComplianceRoutes["Compliance Router (/api/compliance)"]
-        PerfRoutes["Performance Router (/api/performance)"]
+    subgraph Application["2. Application Layer (Use Cases & DTOs)"]
+        Controllers --> UseCases["Use Cases (CreateRecord, GetRecord, ProcessIncomingRecord, SearchRecords)"]
     end
 
-    subgraph Proto["Shared Contract"]
-        PBuf["record.proto (ceplatform.RecordService)"]
+    subgraph Domain["3. Domain Layer (Core Business Rules)"]
+        UseCases --> Entities["Domain Entities (RecordEntity, IndexedRecordEntity)"]
+        UseCases --> DomainServices["Domain Services (RecordAnalytics, Compliance)"]
+        UseCases --> Events["Domain Events (recordEvents)"]
     end
 
-    subgraph ServiceB["Backend Service B (Node.js 22 / Express :3002)"]
-        GrpcClient["gRPC Client (WatchRecords stream)"] --> Processor["Record Processor"]
-        Processor --> ES[("Elasticsearch 8 :9200")]
-        Processor --> SNS["AWS SNS (LocalStack :4566)"]
-        Processor --> SES["AWS SES (LocalStack :4566)"]
+    subgraph Infrastructure["4. Infrastructure Layer (Adapters & Clients)"]
+        UseCases -.-> Repositories["MongoRecordRepository"]
+        UseCases -.-> GrpcAdapters["GrpcRecordServer / GrpcRecordConsumer"]
+        UseCases -.-> ExternalAdapters["ElasticsearchAdapter, SnsPublisher, SesNotifier"]
     end
 
-    HTTP -- "HTTP REST :3001" --> REST_A
-    PBuf -.-> GrpcServer
-    PBuf -.-> GrpcClient
-    GrpcServer -- "gRPC Stream :50051" --> GrpcClient
+    Repositories --> Mongo[("MongoDB 8")]
+    GrpcAdapters --> ProtoContract["record.proto"]
+    ExternalAdapters --> ES[("Elasticsearch 8")]
+    ExternalAdapters --> AWS["LocalStack (SNS / SES)"]
+```
+
+### Architectural Layering Rules:
+1. **`domain/`**: Houses pure business logic, domain entities (`RecordEntity`), domain events (`recordEvents`), and domain rules (e.g. $O(n^3)$ Big-O complexity algorithms, GDPR/FERPA compliance rules), completely decoupled from web frameworks or databases.
+2. **`application/`**: Encapsulates discrete Use Cases (`CreateRecordUseCase`, `GetRecordByIdUseCase`, `ProcessIncomingRecordUseCase`, `SearchRecordsUseCase`, `ExportFormatUseCase`) and Data Transfer Objects (DTOs).
+3. **`infrastructure/`**: Concrete implementations and technical adapters (Mongoose repository, gRPC server/client, Elasticsearch client, AWS SNS/SES clients, SAST input sanitization).
+4. **`presentation/`**: HTTP controllers, route dispatchers, security headers middleware (HSTS, CSP, X-Frame-Options), clean error handlers (no 500 stack trace leak), and gRPC event listeners.
+5. **`config/`**: Centralized environment variable validation and runtime constants.
+
+---
+
+## 📐 End-to-End System Architecture
+
+```mermaid
+flowchart LR
+    subgraph UI["Frontend (Angular 20)"]
+        Ng["Record Components (Signals)"] --> Http["RecordService"]
+    end
+
+    subgraph SvcA["Backend Service A (Port 3001 / gRPC 50051)"]
+        CtrlA["RecordController"] --> UCaseA["CreateRecordUseCase"]
+        UCaseA --> MongoRepo["MongoRecordRepository"]
+        UCaseA --> Evt["recordEvents"]
+        Evt --> GrpcSrv["GrpcRecordServer"]
+    end
+
+    subgraph SvcB["Backend Service B (Port 3002)"]
+        GrpcCli["GrpcRecordConsumer"] --> UCaseB["ProcessIncomingRecordUseCase"]
+        UCaseB --> ESAdapter["ElasticsearchAdapter"]
+        UCaseB --> SNSAdapter["SnsEventPublisher"]
+        UCaseB --> SESAdapter["SesEmailNotifier"]
+    end
+
+    Http -- "HTTP REST" --> CtrlA
+    MongoRepo --> MDB[("MongoDB 8")]
+    GrpcSrv -- "gRPC Streaming :50051" --> GrpcCli
+    ESAdapter --> ES[("Elasticsearch 8")]
+    SNSAdapter --> AWS1["AWS SNS (LocalStack)"]
+    SESAdapter --> AWS2["AWS SES (LocalStack)"]
 ```
 
 ---
 
-## 📊 Strategy & Metrics Coverage (Testable Strategy v0.2)
-
-This repository is instrumented with full test fixtures, code patterns, and live endpoints covering both **Static Code Analysis (Repository Plane)** and **Dynamic URL Testing (API Plane)**:
+## 📊 Strategy & Metrics Pass Data (Testable Strategy v0.2)
 
 ### 1. Structural & Complexity Analysis
-* **Cyclomatic & Cognitive Complexity:** Layered branches, decision-points, and $O(n^3)$ triply nested loops for AST / Big-O complexity analyzers (`src/utils/recordAnalytics.js`, `record-analytics.ts`).
-* **Code Duplication:** Cross-service identical CSV/NDJSON transformers for `jscpd` and SonarJS clone detection (`src/utils/exportFormat.js`, `export-format.ts`, `export-format-legacy.ts`).
+* **Cyclomatic & Cognitive Complexity:** Triply nested loops for $O(n^3)$ Big-O detection, decision branches, switch cases, and DU-pairs (`RecordAnalyticsDomainService.js`, `record-analytics.ts`).
+* **Code Duplication & Clones:** Cross-service duplicate CSV/NDJSON transformers for `jscpd` and SonarJS clone detection (`ExportFormatUseCase.js`, `export-format.ts`, `export-format-legacy.ts`).
 * **Data Flow Testing:** Variable definition-use mapping (All-Defs, C-Use computations, P-Use predicate branch decisions).
 
 ### 2. Static Application Security (SAST) & Supply Chain (SCA)
-* **SAST:** Input sanitization (`sanitizeInputString`), safe path traversal resolution (`resolveSafeFilePath`), parameterized queries (`src/utils/internalDiagnostics.js`).
+* **SAST:** Input sanitization (`SanitizationAdapter.sanitizeInputString`), safe path traversal (`resolveSafeFilePath`), parameterized queries.
 * **SCA:** Multi-tier dependency trees in lockfiles (`package-lock.json`), license compliance metadata (`license-checker`), vulnerability databases (`cve-lite-cli`, `npm audit`).
 
 ### 3. Compliance & Governance
@@ -79,29 +115,29 @@ This repository is instrumented with full test fixtures, code patterns, and live
 
 ---
 
-## 🚀 Quick Start & Verification
+## 🚀 Run & Verification Commands
 
-### 1. Infrastructure (Docker Compose)
+### 1. Infrastructure
 ```bash
 docker-compose up -d
 ```
 
-### 2. Backend Service A (REST + gRPC Server)
+### 2. Backend Service A (Clean Architecture)
 ```bash
 cd backend-service-a
 npm install
-npm run check       # Entrypoint syntax check
-npm test            # 23 passing Mocha unit & integration tests
+npm run check       # Syntax & require check
+npm test            # 24 passing unit & integration tests
 npm run coverage    # Cobertura XML & Istanbul coverage report
 npm start           # Starts HTTP :3001 and gRPC :50051
 ```
 
-### 3. Backend Service B (gRPC Consumer + Elasticsearch + AWS)
+### 3. Backend Service B (Clean Architecture)
 ```bash
 cd ../backend-service-b
 npm install
-npm run check       # Entrypoint syntax check
-npm test            # 13 passing Mocha integration tests
+npm run check       # Syntax & require check
+npm test            # 13 passing unit & integration tests
 npm run coverage    # Cobertura XML & Istanbul coverage report
 npm start           # Starts HTTP :3002 and connects to gRPC
 ```
@@ -110,9 +146,9 @@ npm start           # Starts HTTP :3002 and connects to gRPC
 ```bash
 cd ../frontend
 npm install
-npm run lint:biome  # Biome linter & formatter check
-npx ng build        # Builds production bundle using esbuild Application Builder
-npm start           # Serves frontend on http://localhost:4200
+npm run lint:biome  # Biome check
+npx ng build        # Builds production bundle
+npm start           # Starts Angular SPA on :4200
 ```
 
 ### 5. Dynamic K6 Performance Testing
