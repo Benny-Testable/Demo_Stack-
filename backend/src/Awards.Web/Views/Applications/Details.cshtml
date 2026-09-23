@@ -1,0 +1,23 @@
+@model Awards.Web.Models.ViewModels.ApplicationDetailViewModel
+@{
+    ViewData["Title"] = Model.Application.Reference;
+}
+
+<h1>Application @Model.Application.Reference</h1>
+<p>@Model.ApplicantName &mdash; @Model.ProgrammeName</p>
+
+<dl>
+    <dt>Submitted</dt><dd>@Model.Application.SubmittedOn.ToString("dd MMM yyyy")</dd>
+    <dt>Recorded score</dt><dd>@Model.Application.EligibilityScore.ToString("N2")</dd>
+    <dt>Recalculated score</dt><dd>@Model.RecalculatedScore.ToString("N2")</dd>
+    <dt>Status</dt><dd>@Model.Application.Status</dd>
+    <dt>Outstanding</dt><dd>@Model.OutstandingDisbursement.ToString("N2")</dd>
+</dl>
+
+<h2>Upcoming disbursements</h2>
+<ul>
+@foreach (var disbursement in Model.UpcomingDisbursements)
+{
+    <li>@disbursement.ScheduledFor.ToString("dd MMM yyyy") &mdash; @disbursement.Outstanding.ToString("N2")</li>
+}
+</ul>

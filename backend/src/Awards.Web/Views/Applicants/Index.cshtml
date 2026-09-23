@@ -1,0 +1,27 @@
+@model IEnumerable<Awards.Web.Models.Applicant>
+@{
+    ViewData["Title"] = "Applicants";
+}
+
+<h1>Applicants</h1>
+
+<form method="get">
+    <input type="text" name="search" placeholder="Search name or institution" />
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead><tr><th>Name</th><th>Institution</th><th>Year</th><th>GPA</th><th>Applications</th></tr></thead>
+    <tbody>
+    @foreach (var applicant in Model)
+    {
+        <tr>
+            <td>@applicant.FullName</td>
+            <td>@applicant.Institution</td>
+            <td>@applicant.YearOfStudy</td>
+            <td>@applicant.GradePointAverage.ToString("0.00")</td>
+            <td>@applicant.Applications.Count</td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,32 @@
+@model Awards.Web.Models.ViewModels.AwardsSummaryViewModel
+@{
+    ViewData["Title"] = "Overview";
+}
+
+<h1>Awards overview</h1>
+
+<dl>
+    <dt>Programmes</dt><dd>@Model.ProgrammeCount</dd>
+    <dt>Applications</dt><dd>@Model.ApplicationCount</dd>
+    <dt>Awarded</dt><dd>@Model.AwardedCount</dd>
+    <dt>Total awarded</dt><dd>@Model.TotalAwarded.ToString("N2")</dd>
+</dl>
+
+<table>
+    <thead>
+        <tr><th>Code</th><th>Programme</th><th>Category</th><th>Applications</th><th>Places</th><th>Award</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var row in Model.Programmes)
+    {
+        <tr>
+            <td>@row.Code</td>
+            <td><a asp-controller="Programmes" asp-action="Details" asp-route-id="@row.Id">@row.Name</a></td>
+            <td>@row.Category</td>
+            <td>@row.Applications</td>
+            <td>@row.PlacesAvailable</td>
+            <td>@row.AwardAmount.ToString("N2")</td>
+        </tr>
+    }
+    </tbody>
+</table>

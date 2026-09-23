@@ -1,0 +1,22 @@
+@model IEnumerable<Awards.Web.Models.Application>
+@{
+    ViewData["Title"] = "Applications";
+}
+
+<h1>Applications</h1>
+
+<table>
+    <thead><tr><th>Reference</th><th>Applicant</th><th>Programme</th><th>Score</th><th>Status</th></tr></thead>
+    <tbody>
+    @foreach (var application in Model)
+    {
+        <tr>
+            <td><a asp-action="Details" asp-route-id="@application.Id">@application.Reference</a></td>
+            <td>@application.Applicant?.FullName</td>
+            <td>@application.Programme?.Name</td>
+            <td>@application.EligibilityScore.ToString("N2")</td>
+            <td>@application.Status</td>
+        </tr>
+    }
+    </tbody>
+</table>

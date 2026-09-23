@@ -1,0 +1,25 @@
+@model IEnumerable<Awards.Web.Models.Programme>
+@{
+    ViewData["Title"] = "Programmes";
+}
+
+<h1>Programmes</h1>
+
+<table>
+    <thead>
+        <tr><th>Code</th><th>Name</th><th>Category</th><th>Min GPA</th><th>Places</th><th>Closes</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var programme in Model)
+    {
+        <tr>
+            <td>@programme.Code</td>
+            <td><a asp-action="Details" asp-route-id="@programme.Id">@programme.Name</a></td>
+            <td>@programme.Category</td>
+            <td>@programme.MinimumGpa.ToString("0.00")</td>
+            <td>@programme.PlacesAvailable</td>
+            <td>@programme.ClosesOn.ToString("dd MMM yyyy")</td>
+        </tr>
+    }
+    </tbody>
+</table>
