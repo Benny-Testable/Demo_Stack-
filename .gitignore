@@ -1,0 +1,7 @@
+bin/
+obj/
+node_modules/
+coverage/
+TestResults/
+*.user
+.nyc_output/
