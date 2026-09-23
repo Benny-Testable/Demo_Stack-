@@ -13,8 +13,8 @@
     "dev": "node --watch src/server.js",
     "check": "node -c src/server.js",
     "lint": "eslint src/ test/",
-    "test": "cross-env NODE_ENV=test mocha \"test/**/*.test.js\"",
-    "coverage": "cross-env NODE_ENV=test nyc --reporter=cobertura --reporter=text mocha \"test/**/*.test.js\"",
+    "test": "cross-env NODE_ENV=test nyc --reporter=cobertura --reporter=json --reporter=json-summary --reporter=text mocha \"test/**/*.test.js\"",
+    "coverage": "cross-env NODE_ENV=test nyc --reporter=cobertura --reporter=json --reporter=json-summary --reporter=text mocha \"test/**/*.test.js\"",
     "mutation": "stryker run"
   },
   "dependencies": {

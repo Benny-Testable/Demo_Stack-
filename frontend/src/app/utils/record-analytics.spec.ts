@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { summarizeRecordBatch } from './record-analytics';
 
 describe('record-analytics utility (frontend)', () => {

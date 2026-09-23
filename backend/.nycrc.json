@@ -1,0 +1,10 @@
+{
+  "reporter": [
+    "cobertura",
+    "json",
+    "json-summary",
+    "text"
+  ],
+  "report-dir": "./coverage",
+  "temp-dir": "./.nyc_output"
+}

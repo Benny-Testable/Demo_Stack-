@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "vitest run --coverage",
+    "coverage": "vitest run --coverage",
+    "postinstall": "node scripts/patch-eslint.js",
     "lint": "eslint .",
     "lint:biome": "biome check src/",
     "mutation": "stryker run"
@@ -49,6 +51,7 @@
     "@tracegraph/cli": "^0.3.1",
     "@tracegraph/trace-js": "^0.3.1",
     "@types/jasmine": "~5.1.0",
+    "@vitest/coverage-v8": "^3.2.7",
     "angular-eslint": "20.3.0",
     "crap4ts": "^1.0.1",
     "cve-lite-cli": "^1.29.0",
@@ -56,6 +59,7 @@
     "eslint-plugin-security": "^4.0.1",
     "eslint-plugin-sonarjs": "^1.0.4",
     "jasmine-core": "~5.9.0",
+    "jsdom": "^29.1.1",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
@@ -66,6 +70,7 @@
     "oxc-coverage-instrument": "^0.12.0",
     "ts-unused-exports": "^11.0.1",
     "typescript": "~5.9.2",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^3.2.7"
   }
 }

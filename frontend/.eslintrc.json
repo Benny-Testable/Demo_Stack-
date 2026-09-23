@@ -1,0 +1,75 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "dist/**",
+    ".angular/**",
+    "coverage/**",
+    "reports/**",
+    ".stryker-tmp/**",
+    "eslint.config.js",
+    "vitest.config.ts",
+    "scripts/**"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": [
+          "tsconfig.json",
+          "tsconfig.app.json",
+          "tsconfig.spec.json"
+        ],
+        "createDefaultProgram": false
+      },
+      "plugins": [
+        "@typescript-eslint",
+        "@angular-eslint",
+        "security",
+        "sonarjs"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:security/recommended-legacy",
+        "plugin:sonarjs/recommended-legacy"
+      ],
+      "rules": {
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "parser": "@angular-eslint/template-parser",
+      "plugins": [
+        "@angular-eslint/template"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/accessibility"
+      ],
+      "rules": {}
+    }
+  ]
+}

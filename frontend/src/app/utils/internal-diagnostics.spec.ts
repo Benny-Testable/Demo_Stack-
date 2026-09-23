@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { sanitizeInput, maskCardPan } from './internal-diagnostics';
 
 describe('internal-diagnostics utility (frontend)', () => {

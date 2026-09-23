@@ -142,3 +142,22 @@ npm start           # Starts Angular SPA on :4200
 ```bash
 k6 run perf/k6-load-test.js
 ```
+
+---
+
+## 📈 Analyser expectations
+
+Both the `backend` and `frontend` workspaces emit test coverage artifacts directly to `<workspace>/coverage/` upon test execution:
+- `cobertura-coverage.xml` (Cobertura XML format)
+- `coverage-final.json` (Full Istanbul/V8 JSON report)
+- `coverage-summary.json` (Structured JSON coverage summary)
+
+### Workspace Commands:
+- **Backend (`backend/`)**:
+  - `npm test`: Runs test suite under `nyc` with all coverage reporters enabled.
+  - `npm run coverage`: Generates full coverage reports to `backend/coverage/`.
+- **Frontend (`frontend/`)**:
+  - `npm test`: Runs headless Vitest suite with `@vitest/coverage-v8`.
+  - `npm run coverage`: Generates full coverage reports to `frontend/coverage/`.
+  - `npx eslint --eslintrc .`: Invokes ESLint with legacy `--eslintrc` flag using `frontend/.eslintrc.json`.
+  - `npx eslint .`: Invokes ESLint using modern flat configuration `frontend/eslint.config.js`.

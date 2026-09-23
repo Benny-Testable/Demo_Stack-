@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { formatRecordToCsvRow, exportRecordsToCsv } from './export-format';
 
 describe('export-format utility (frontend)', () => {
