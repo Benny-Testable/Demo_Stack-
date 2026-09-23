@@ -8,10 +8,10 @@
     "watch": "ng build --watch --configuration development",
     "test": "vitest run --coverage",
     "coverage": "vitest run --coverage",
-    "postinstall": "node scripts/patch-eslint.js",
-    "lint": "eslint .",
+    "lint": "eslint --ext .ts,.html src",
     "lint:biome": "biome check src/",
-    "mutation": "stryker run"
+    "mutation": "stryker run",
+    "lint:legacy": "eslint --eslintrc --ext .ts,.html src"
   },
   "prettier": {
     "printWidth": 100,
