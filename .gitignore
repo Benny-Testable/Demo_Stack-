@@ -1,0 +1,8 @@
+vendor/
+node_modules/
+dist/
+coverage/
+.phpunit.cache/
+.env
+*.log
+.DS_Store

@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secret}
+      MYSQL_DATABASE: star_landlord
+    command: --default-authentication-plugin=caching_sha2_password
+    ports: ["3306:3306"]
+    volumes: ["mysql-data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+  backend:
+    image: php:8.3-cli
+    working_dir: /app
+    volumes: ["./backend:/app"]
+    depends_on:
+      mysql: {condition: service_healthy}
+    command: php -S 0.0.0.0:8000 -t public
+    ports: ["8000:8000"]
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    volumes: ["./frontend:/app"]
+    command: sh -c "npm ci && npm run dev -- --host"
+    ports: ["5173:5173"]
+
+volumes:
+  mysql-data:

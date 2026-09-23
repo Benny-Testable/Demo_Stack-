@@ -1,0 +1,32 @@
+{
+  "name": "star/backend",
+  "type": "project",
+  "description": "Star multi-tenant backend (PHP 8.3 / Laravel 10, database per tenant)",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "laravel/framework": "^10.48",
+    "laravel/tinker": "^2.9",
+    "ramsey/uuid": "^4.7"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5",
+    "phpstan/phpstan": "^1.10",
+    "mockery/mockery": "^1.6",
+    "fakerphp/faker": "^1.23"
+  },
+  "autoload": {
+    "psr-4": {"App\\": "app/", "Database\Seeders\\": "database/seeders/"}
+  },
+  "autoload-dev": {
+    "psr-4": {"Tests\\": "tests/"}
+  },
+  "scripts": {
+    "test": "phpunit",
+    "coverage": "XDEBUG_MODE=coverage phpunit --coverage-cobertura coverage/cobertura.xml --coverage-clover coverage/clover.xml",
+    "analyse": "phpstan analyse --memory-limit=512M"
+  },
+  "config": {"sort-packages": true},
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

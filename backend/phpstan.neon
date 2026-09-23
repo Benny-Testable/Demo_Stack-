@@ -1,0 +1,8 @@
+parameters:
+    level: 6
+    paths:
+        - app
+        - database
+    excludePaths:
+        - app/Support/LegacyPricing.php
+    treatPhpDocTypesAsCertain: false
