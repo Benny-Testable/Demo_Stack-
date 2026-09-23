@@ -1,0 +1,29 @@
+@model IEnumerable<Estates.Web.Models.Tenant>
+@{
+    ViewData["Title"] = "Tenants";
+}
+
+<h1>Tenants</h1>
+
+<form method="get">
+    <input type="text" name="search" placeholder="Search company" />
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead>
+        <tr><th>Company</th><th>Contact</th><th>Credit score</th><th>Anchor</th><th>Leases</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var tenant in Model)
+    {
+        <tr>
+            <td>@tenant.CompanyName</td>
+            <td>@tenant.ContactEmail</td>
+            <td>@tenant.CreditScore</td>
+            <td>@(tenant.IsAnchorTenant ? "yes" : "no")</td>
+            <td>@tenant.Leases.Count</td>
+        </tr>
+    }
+    </tbody>
+</table>

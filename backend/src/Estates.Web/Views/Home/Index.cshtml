@@ -1,0 +1,34 @@
+@model Estates.Web.Models.ViewModels.PortfolioSummaryViewModel
+@{
+    ViewData["Title"] = "Portfolio";
+}
+
+<h1>Portfolio summary</h1>
+
+<dl>
+    <dt>Properties</dt><dd>@Model.PropertyCount</dd>
+    <dt>Active leases</dt><dd>@Model.ActiveLeaseCount</dd>
+    <dt>Annual rent</dt><dd>@Model.TotalAnnualRent.ToString("N2")</dd>
+</dl>
+
+<table>
+    <thead>
+        <tr>
+            <th>Block</th><th>Name</th><th>City</th><th>Leases</th>
+            <th>Annual rent</th><th>Occupancy</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var row in Model.Properties)
+    {
+        <tr>
+            <td>@row.BlockNumber</td>
+            <td><a asp-controller="Properties" asp-action="Details" asp-route-id="@row.Id">@row.Name</a></td>
+            <td>@row.City</td>
+            <td>@row.LeaseCount</td>
+            <td>@row.AnnualRent.ToString("N2")</td>
+            <td>@row.OccupancyPct%</td>
+        </tr>
+    }
+    </tbody>
+</table>

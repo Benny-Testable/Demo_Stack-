@@ -1,0 +1,22 @@
+@model Estates.Web.Models.ViewModels.LeaseDetailViewModel
+@{
+    ViewData["Title"] = Model.Lease.Reference;
+}
+
+<h1>Lease @Model.Lease.Reference</h1>
+<p>@Model.PropertyName &mdash; @Model.TenantName</p>
+
+<dl>
+    <dt>Term</dt><dd>@Model.Lease.TermMonths months</dd>
+    <dt>Base rent</dt><dd>@Model.Lease.BaseAnnualRent.ToString("N2")</dd>
+    <dt>Calculated rent</dt><dd>@Model.CalculatedRent.ToString("N2")</dd>
+    <dt>Outstanding</dt><dd>@Model.OutstandingBalance.ToString("N2")</dd>
+</dl>
+
+<h2>Upcoming payments</h2>
+<ul>
+@foreach (var payment in Model.UpcomingPayments)
+{
+    <li>@payment.DueOn.ToString("dd MMM yyyy") &mdash; @payment.Outstanding.ToString("N2")</li>
+}
+</ul>

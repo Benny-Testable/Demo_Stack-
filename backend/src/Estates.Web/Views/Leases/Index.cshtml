@@ -1,0 +1,25 @@
+@model IEnumerable<Estates.Web.Models.Lease>
+@{
+    ViewData["Title"] = "Leases";
+}
+
+<h1>Leases</h1>
+
+<table>
+    <thead>
+        <tr><th>Reference</th><th>Property</th><th>Tenant</th><th>Units</th><th>Rent</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var lease in Model)
+    {
+        <tr>
+            <td><a asp-action="Details" asp-route-id="@lease.Id">@lease.Reference</a></td>
+            <td>@lease.Property?.Name</td>
+            <td>@lease.Tenant?.CompanyName</td>
+            <td>@lease.UnitCount</td>
+            <td>@lease.BaseAnnualRent.ToString("N2")</td>
+            <td>@lease.Status</td>
+        </tr>
+    }
+    </tbody>
+</table>

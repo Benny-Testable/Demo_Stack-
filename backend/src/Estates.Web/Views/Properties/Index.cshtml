@@ -1,0 +1,29 @@
+@model IEnumerable<Estates.Web.Models.Property>
+@{
+    ViewData["Title"] = "Properties";
+}
+
+<h1>Properties</h1>
+
+<form method="get">
+    <input type="text" name="city" placeholder="Filter by city" />
+    <button type="submit">Filter</button>
+</form>
+
+<table>
+    <thead>
+        <tr><th>Block</th><th>Name</th><th>Address</th><th>Grade</th><th>Units</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var property in Model)
+    {
+        <tr>
+            <td>@property.BlockNumber</td>
+            <td><a asp-action="Details" asp-route-id="@property.Id">@property.Name</a></td>
+            <td>@property.AddressLine, @property.City @property.PostCode</td>
+            <td>@property.Grade</td>
+            <td>@property.TotalUnits</td>
+        </tr>
+    }
+    </tbody>
+</table>

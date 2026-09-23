@@ -1,0 +1,27 @@
+@model Estates.Web.Models.Property
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1>@Model.Name</h1>
+<p>Block @Model.BlockNumber &mdash; @Model.AddressLine, @Model.City @Model.PostCode</p>
+<p>@Model.TotalUnits units across @Model.FloorAreaSqFt.ToString("N0") sq ft (@Model.Grade)</p>
+
+<h2>Leases</h2>
+<table>
+    <thead>
+        <tr><th>Reference</th><th>Tenant</th><th>Term</th><th>Rent</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var lease in Model.Leases)
+    {
+        <tr>
+            <td><a asp-controller="Leases" asp-action="Details" asp-route-id="@lease.Id">@lease.Reference</a></td>
+            <td>@lease.Tenant?.CompanyName</td>
+            <td>@lease.StartDate.ToString("dd MMM yyyy") &ndash; @lease.EndDate.ToString("dd MMM yyyy")</td>
+            <td>@lease.BaseAnnualRent.ToString("N2")</td>
+            <td>@lease.Status</td>
+        </tr>
+    }
+    </tbody>
+</table>

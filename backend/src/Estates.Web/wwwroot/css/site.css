@@ -1,0 +1,39 @@
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  color: #1f2430;
+  background: #f7f8fa;
+}
+
+header nav {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1rem 2rem;
+  background: #1f2430;
+}
+
+header nav a {
+  color: #f7f8fa;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+main {
+  padding: 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+th, td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid #e2e5ea;
+  text-align: left;
+}
+
+th {
+  background: #eceff3;
+}
