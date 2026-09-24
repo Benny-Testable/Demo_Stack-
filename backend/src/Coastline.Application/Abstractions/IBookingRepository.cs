@@ -1,7 +1,7 @@
 using Coastline.Domain.Entities;
 
 namespace Coastline.Application.Abstractions;
-
+## new commit 
 public interface IBookingRepository
 {
     Task<Booking?> GetAsync(Guid id, CancellationToken ct = default);
